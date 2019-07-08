@@ -1,6 +1,7 @@
 #include <gst/gst.h>
 #include "helper.h"
 
+
 /* structure to contain all our information, so we can pass it to callbacks */
 
 typedef struct _CustomData {
@@ -12,6 +13,60 @@ typedef struct _CustomData {
 } CustomData;
 
 
+// prototypes
+int use_factory_make(CustomData *data);
+
+int use_factory_make(CustomData *data)
+{
+	GstCaps *caps;
+
+	/* create the elements */
+	data->source = gst_element_factory_make("rkisp", "source");
+	data->filter = gst_element_factory_make("capsfilter", "filter");
+	data->convert = gst_element_factory_make("videoconvert", "convert");
+	data->sink = gst_element_factory_make("kmssink", "sink");
+
+	/* create the empty pipeline */
+	data->pipeline = gst_pipeline_new("test-pipeline");
+
+	if ( !data->pipeline || !data->source || !data->filter || !data->convert || !data->sink ) {
+		g_printerr("Not all elements could be created.\n");
+		return -1;
+	}
+
+	/* build the pipeline. Note that we are Not linking the source at this point. We will do it later. */
+	gst_bin_add_many(GST_BIN(data->pipeline), data->source, data->filter, data->convert, data->sink, NULL);
+	if ( !gst_element_link_many( data->source, data->filter, data->convert, data->sink, NULL) ) 
+	{
+		g_printerr("Elements could be linked.\n");
+		gst_object_unref(data->pipeline);
+		return -1;
+	}
+
+	/* set the properties */
+	g_object_set(data->source, "device", "/dev/video0", NULL);
+	g_object_set(data->source, "analyzer", "1", NULL);
+
+
+	caps = gst_caps_from_string("video/x-raw,format=NV12,width=320,height=240,framerate=30/1");
+	g_object_set(data->filter, "caps", caps, NULL);
+
+	//g_object_set(data->sink, "can-scale", "false", NULL); // not working
+	//g_object_set(data->sink, "render-rectangle", "<100,100,320,240>", NULL); // GstValueArray error
+	
+
+	// dump pad caps
+	if ( dump_src_caps(data->source) < 0 )
+	{
+		gst_object_unref(data->pipeline);
+		return -1;
+	}
+
+	return 0;
+}
+
+
+
 int main(int argc, char *argv[])
 {
 	CustomData data;
@@ -19,71 +74,13 @@ int main(int argc, char *argv[])
 	GstMessage *msg;
 	GstStateChangeReturn ret;
 	gboolean terminate = FALSE;
-	GstPad * video_pad = NULL;
-	GstCaps *video_caps = NULL;
-	GstCaps *caps;
 
 	/* initialize gstreamer */
 	gst_init(&argc, &argv);
 
-	/* create the elements */
-	data.source = gst_element_factory_make("rkisp", "source");
-	data.filter = gst_element_factory_make("capsfilter", "filter");
-	data.convert = gst_element_factory_make("videoconvert", "convert");
-	data.sink = gst_element_factory_make("kmssink", "sink");
-
-	/* create the empty pipeline */
-	data.pipeline = gst_pipeline_new("test-pipeline");
-
-	if ( !data.pipeline || !data.source || !data.filter || !data.convert || !data.sink ) {
-		g_printerr("Not all elements could be created.\n");
+	if (use_factory_make(&data) < 0 )
 		return -1;
-	}
 
-	/* build the pipeline. Note that we are Not linking the source at this point. We will do it later. */
-	gst_bin_add_many(GST_BIN(data.pipeline), data.source, data.filter, data.convert, data.sink, NULL);
-	if ( !gst_element_link_many( data.source, data.filter, data.convert, data.sink, NULL) ) 
-	{
-		g_printerr("Elements could be linked.\n");
-		gst_object_unref(data.pipeline);
-		return -1;
-	}
-
-	/* set the properties */
-	g_object_set(data.source, "device", "/dev/video0", NULL);
-	g_object_set(data.source, "analyzer", "1", NULL);
-
-
-	caps = gst_caps_from_string("video/x-raw,format=NV12,width=320,height=240,framerate=30/1");
-	g_object_set(data.filter, "caps", caps, NULL);
-
-	//g_object_set(data.sink, "can-scale", "false", NULL);
-	//g_object_set(data.sink, "render-rectangle", "<100,100,320,240>", NULL);
-
-
-	video_pad = gst_element_get_static_pad(data.source, "src");
-	if ( !video_pad )
-	{
-		g_printerr("Could not retrieve pad\n");
-		gst_object_unref(data.pipeline);
-		return -1;
-	}
-
-	video_caps = gst_pad_get_current_caps(video_pad);
-	if ( !video_caps ) 
-		video_caps = gst_pad_query_caps(video_pad, NULL);
-
-	g_print("caps for the src pad:\n");
-	print_caps(video_caps, "    ");
-	gst_caps_unref(video_caps);
-
-	gst_caps_unref(video_caps);
-	gst_object_unref(video_pad);
-
-
-
-	/* Connect to the pad-added signal */
-	//g_signal_connect(data.source, "pad-added", G_CALLBACK(pad_added_handler), &data);
 
 	/* Start playing */
 	ret = gst_element_set_state(data.pipeline, GST_STATE_PLAYING);
@@ -148,78 +145,4 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-
-#if 0
-/* handler for the pad-added signal */
-static void pad_added_handler(GstElement *src, GstPad *pad, CustomData *data);
-
-/* This function will be called by the pad-added signal */
-static void pad_added_handler(GstElement * src, GstPad *new_pad, CustomData *data)
-{
-	GstPadLinkReturn ret;
-	GstCaps *new_pad_caps = NULL;
-	GstStructure *new_pad_struct = NULL;
-	const gchar *new_pad_type = NULL;
-
-	g_print("Received new pad '%s' from '%s':\n", GST_PAD_NAME(new_pad), GST_ELEMENT_NAME(src));
-
-	/* check the new pad's type */
-	new_pad_caps = gst_pad_get_current_caps(new_pad);
-	new_pad_struct = gst_caps_get_structure(new_pad_caps, 0);
-	new_pad_type = gst_structure_get_name(new_pad_struct);
-
-	if ( g_str_has_prefix(new_pad_type, "video/x-raw") ) {
-		GstPad *video_q_pad = gst_element_get_static_pad(data->video_queue, "sink");
-
-		/* if our converter is already linked, we have nothing to do here */
-		if ( gst_pad_is_linked(video_q_pad)) {
-			g_print("We are already linked. Ignoring. video\n");
-			goto exit;
-		}
-
-		/* Attempt the link */
-		ret = gst_pad_link(new_pad, video_q_pad);
-		if ( GST_PAD_LINK_FAILED(ret) ) 
-		{
-			g_print("Type is '%s' but link failed. video\n", new_pad_type);
-		}
-		else
-		{
-			g_print("Link succeeded (type '%s'). video\n", new_pad_type);
-		}
-
-		/* Unreference the sink pad */
-		gst_object_unref(video_q_pad);
-	} else if ( g_str_has_prefix(new_pad_type, "audio/x-raw") ) {
-		GstPad *audio_q_pad = gst_element_get_static_pad(data->audio_queue, "sink");
-
-		if ( gst_pad_is_linked(audio_q_pad)) {
-			g_print("We are already linked. Ignoring. audio\n");
-			goto exit;
-		}
-
-		ret = gst_pad_link(new_pad, audio_q_pad);
-		if ( GST_PAD_LINK_FAILED(ret) ) 
-		{
-			g_print("Type is '%s' but link failed. audio\n", new_pad_type);
-		}
-		else
-		{
-			g_print("Link succeeded (type '%s'). audio\n", new_pad_type);
-		}
-
-		gst_object_unref(audio_q_pad);
-	} else {
-		g_print("It has type '%s' which is not raw video. Ignoring.\n", new_pad_type);
-		goto exit;
-	}
-
-exit:
-	/* unreference the new pad's caps. if we got them */
-
-	if ( new_pad_caps != NULL ) 
-		gst_caps_unref(new_pad_caps);
-
-}
-#endif 
 /********** end of file **********/

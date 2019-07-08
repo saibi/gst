@@ -15,5 +15,7 @@
 
 void print_caps(const GstCaps * caps, const gchar *pfx);
 
+int dump_src_caps(GstElement *source);
+
 #endif
 /********** end of file **********/

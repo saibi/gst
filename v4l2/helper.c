@@ -37,4 +37,30 @@ void print_caps(const GstCaps * caps, const gchar *pfx)
 		gst_structure_foreach(structure, print_field, (gpointer)pfx);
 	}
 }
+
+int dump_src_caps(GstElement *source)
+{
+	GstPad * video_pad = NULL;
+	GstCaps *video_caps = NULL;
+
+	video_pad = gst_element_get_static_pad(source, "src");
+	if ( !video_pad )
+	{
+		g_printerr("Could not retrieve pad\n");
+		return -1;
+	}
+
+	video_caps = gst_pad_get_current_caps(video_pad);
+	if ( !video_caps ) 
+		video_caps = gst_pad_query_caps(video_pad, NULL);
+
+	g_print("caps for the src pad:\n");
+	print_caps(video_caps, "    ");
+	gst_caps_unref(video_caps);
+
+	gst_caps_unref(video_caps);
+	gst_object_unref(video_pad);
+
+	return 0;
+}
 /********** end of file **********/
