@@ -65,6 +65,18 @@ int use_factory_make(CustomData *data)
 	return 0;
 }
 
+int use_parse_launch(CustomData *data);
+
+int use_parse_launch(CustomData *data)
+{
+
+	// sink test
+	//data->pipeline = gst_parse_launch("rkisp device=/dev/video0 io-mode=1 analyzer=1 enable-3a=1 ! video/x-raw,format=NV12,width=640,height=480,framerate=30/1 ! videoconvert ! glimagesink name=videosink", NULL);
+	data->pipeline = gst_parse_launch("rkisp device=/dev/video0 io-mode=1 analyzer=1 enable-3a=1 ! video/x-raw,format=NV12,width=640,height=480,framerate=30/1 ! videoconvert ! kmssink name=videosink can-scale=false", NULL);
+
+	return 0;
+}
+
 
 
 int main(int argc, char *argv[])
@@ -78,7 +90,7 @@ int main(int argc, char *argv[])
 	/* initialize gstreamer */
 	gst_init(&argc, &argv);
 
-	if (use_factory_make(&data) < 0 )
+	if (use_parse_launch(&data) < 0 )
 		return -1;
 
 
