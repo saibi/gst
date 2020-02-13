@@ -57,11 +57,14 @@ ALL_OBJ=$(ALL_SRC:%.c=%.o)
 ALL_BIN=$(ALL_SRC:%.c=%)
 
 all: $(ALL_OBJ)
-	$(Q)$(CC) $(LFLAGS) -o test $(ALL_OBJ) $(LIBS)
 
 %.o : %.c
 	$(Q)$(CC) $(CFLAGS) -c $< 
+	$(Q)$(CC) $(LFLAGS) -o $(basename $@) $@ $(LIBS)
 
 
 clean:
 	$(Q)rm -f *.o test $(ALL_BIN)
+
+
+#	$(Q)$(CC) $(LFLAGS) -o test $(ALL_OBJ) $(LIBS)
