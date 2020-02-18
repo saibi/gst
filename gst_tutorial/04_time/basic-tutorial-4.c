@@ -104,6 +104,10 @@ static void handle_message(CustomData *data, GstMessage *msg)
 			data->terminate = TRUE;
 			break;
 
+		case GST_MESSAGE_DURATION:
+			data->duration = GST_CLOCK_TIME_NONE;
+			break;
+
 		case GST_MESSAGE_STATE_CHANGED:
 			if ( GST_MESSAGE_SRC(msg) == GST_OBJECT(data->playbin)) {
 				GstState old_state, new_state, pending_state;
