@@ -162,7 +162,7 @@ static gboolean refresh_ui(CustomData *data)
 		}
 	}
 
-	if ( !gst_element_query_position(data->playbin, GST_FORMAT_TIME, &current)) {
+	if ( gst_element_query_position(data->playbin, GST_FORMAT_TIME, &current)) {
 		g_signal_handler_block(data->slider, data->slider_update_signal_id);
 		gtk_range_set_value(GTK_RANGE(data->slider), (gdouble)current / GST_SECOND);
 		g_signal_handler_unblock(data->slider, data->slider_update_signal_id);
@@ -326,9 +326,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	g_object_set(data.playbin, "uri", "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
+	//g_object_set(data.playbin, "uri", "https://www.freedesktop.org/software/gstreamer-sdk/data/media/sintel_trailer-480p.webm", NULL);
 
-	//g_object_set(data.playbin, "uri", "file:///home/saibi/saibi-mini9/hdd/ss25/movie2/Terminator - Dark Fate (2019) (2160p BluRay x265 HEVC 10bit HDR AAC 7.1 Tigole)/Terminator - Dark Fate (2019) (2160p BluRay x265 10bit HDR Tigole).mkv", NULL);
+	g_object_set(data.playbin, "uri", "file:///home/saibi/saibi-mini9/hdd/ss25/movie2/Terminator - Dark Fate (2019) (2160p BluRay x265 HEVC 10bit HDR AAC 7.1 Tigole)/Terminator - Dark Fate (2019) (2160p BluRay x265 10bit HDR Tigole).mkv", NULL);
 
 
 	g_signal_connect(G_OBJECT(data.playbin), "video-tags-changed", (GCallback)tags_cb, &data);
