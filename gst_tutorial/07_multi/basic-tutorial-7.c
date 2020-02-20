@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	}
 
 	g_object_set(audio_source, "freq", 215.0f, NULL);
-	g_object_set(visual, "shader", 0, "style", 1, NULL);
+	g_object_set(visual, "shader", 1, "style", 2, NULL);
 
 	gst_bin_add_many(GST_BIN(pipeline), audio_source, tee, audio_queue, audio_convert, audio_resample, audio_sink, video_queue, visual, video_convert, video_sink, NULL);
 
