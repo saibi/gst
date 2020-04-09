@@ -221,13 +221,36 @@ static GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBu
 	GstMyFilter *filter;
 	static gssize cnt = 0;
 
+
 	filter = GST_MYFILTER(parent);
 
 	if (filter->silent == FALSE)
 	{
-		g_print("#%" G_GSIZE_FORMAT "  Have data of size %" G_GSIZE_FORMAT " bytes!\n", cnt++, gst_buffer_get_size(buf));
+		g_print("#%" G_GSIZE_FORMAT "  Have data of size %" G_GSIZE_FORMAT " bytes! %d\n", cnt++, gst_buffer_get_size(buf), gst_buffer_n_memory(buf));
+
+
 		//g_print ("I'm plugged, therefore I'm in. #%d\n", cnt++);
+		
+
 	}
+
+
+#if 0
+	// buf modification template code
+
+	GstBuffer *outbuf;
+
+	outbuf = gst_my_filter_process_data(filter, buf);
+	if ( !outbuf) {
+		// something went wrong
+		GST_ELEMENT_ERROR(GST_ELEMENT(filter), STREAM, FAILED, (NULL), (NULL));
+		return GST_FLOW_ERROR;
+	}
+	return gst_pad_push(filter->srcpad, outbuf);
+
+#endif 
+
+
 
 	/* just push out the incoming buffer without touching it */
 	return gst_pad_push(filter->srcpad, buf);

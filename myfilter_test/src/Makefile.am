@@ -17,27 +17,27 @@ plugin_LTLIBRARIES = libgstmyfilter.la
 ## Plugin 1
 
 # sources used to compile this plug-in
-libgstplugin_la_SOURCES = gstplugin.c gstplugin.h
+#libgstplugin_la_SOURCES = gstplugin.c gstplugin.h
 
 # compiler and linker flags used to compile this plugin, set in configure.ac
-libgstplugin_la_CFLAGS = $(GST_CFLAGS)
-libgstplugin_la_LIBADD = $(GST_LIBS)
-libgstplugin_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
-libgstplugin_la_LIBTOOLFLAGS = --tag=disable-static
+#libgstplugin_la_CFLAGS = $(GST_CFLAGS)
+#libgstplugin_la_LIBADD = $(GST_LIBS)
+#libgstplugin_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+#libgstplugin_la_LIBTOOLFLAGS = --tag=disable-static
 
 ## Plugin 2 (audio filter example)
 
 # sources used to compile this plug-in
-libgstaudiofilterexample_la_SOURCES = gstaudiofilter.c
+#libgstaudiofilterexample_la_SOURCES = gstaudiofilter.c
 
 # compiler and linker flags used to compile this plugin, set in configure.ac
-libgstaudiofilterexample_la_CFLAGS = $(GST_CFLAGS)
-libgstaudiofilterexample_la_LIBADD = $(GST_LIBS)
-libgstaudiofilterexample_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
-libgstaudiofilterexample_la_LIBTOOLFLAGS = --tag=disable-static
+#libgstaudiofilterexample_la_CFLAGS = $(GST_CFLAGS)
+#libgstaudiofilterexample_la_LIBADD = $(GST_LIBS)
+#libgstaudiofilterexample_la_LDFLAGS = $(GST_PLUGIN_LDFLAGS)
+#libgstaudiofilterexample_la_LIBTOOLFLAGS = --tag=disable-static
 
 # headers we need but don't want installed
-noinst_HEADERS = gstplugin.h
+#noinst_HEADERS = gstplugin.h
 
 
 # Plugin 3 : ymkim test
