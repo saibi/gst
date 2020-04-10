@@ -213,6 +213,12 @@ static gboolean gst_my_filter_sink_event(GstPad * pad, GstObject * parent, GstEv
 	return ret;
 }
 
+// for file i/o
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 /* chain function
  * this function does the actual processing
  */
@@ -226,7 +232,41 @@ static GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBu
 
 	if (filter->silent == FALSE)
 	{
-		g_print("#%" G_GSIZE_FORMAT "  Have data of size %" G_GSIZE_FORMAT " bytes! %d\n", cnt++, gst_buffer_get_size(buf), gst_buffer_n_memory(buf));
+		GstMemory * mem = gst_buffer_peek_memory(buf, 0);
+		guint f = GST_MEMORY_FLAGS(mem);
+
+		g_print("#%" G_GSIZE_FORMAT "  Have data of size %" G_GSIZE_FORMAT " bytes! n=%d, offset=%" G_GSIZE_FORMAT ", pts=%" G_GSIZE_FORMAT ", mem flag %d, %s %s %s %s %s %s\n",
+				cnt++, gst_buffer_get_size(buf), gst_buffer_n_memory(buf), GST_BUFFER_OFFSET(buf), GST_BUFFER_TIMESTAMP(buf),
+				f, 
+				f& GST_MEMORY_FLAG_READONLY ? "rdonly" : "", 
+				f& GST_MEMORY_FLAG_NO_SHARE ? "noshare" : "", 
+				f& GST_MEMORY_FLAG_ZERO_PREFIXED ? "zpf" : "", 
+				f& GST_MEMORY_FLAG_ZERO_PADDED ? "zpd" : "", 
+				f& GST_MEMORY_FLAG_PHYSICALLY_CONTIGUOUS ? "pc" : "", 
+				f& GST_MEMORY_FLAG_NOT_MAPPABLE ? "notmap" : "" 
+				);
+
+		if ( cnt == 512 ) 
+		{
+			GstMapInfo info;
+
+			if ( gst_memory_map(mem, &info, GST_MAP_READ) ) 
+			{
+				int fd;
+
+				g_print("write /tmp/dump , size %" G_GSIZE_FORMAT "\n", info.size);
+
+				fd = creat("/tmp/dump", S_IRWXU); 
+				if ( fd > 0 ) {
+					write(fd, info.data, info.size);
+					close(fd);
+				}
+				gst_memory_unmap(mem, &info);
+			}
+		}
+
+
+
 
 
 		//g_print ("I'm plugged, therefore I'm in. #%d\n", cnt++);
