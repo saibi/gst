@@ -20,12 +20,6 @@ typedef struct _EdcHost EdcHost;
 struct _EdcHost
 {
 	GObject parent;
-
-	gchar *name;
-	gchar *address;
-	gint port;
-	gchar *user;
-	gchar *password;
 };
 
 struct _EdcHostClass
@@ -35,6 +29,21 @@ struct _EdcHostClass
 
 GType edc_host_get_type(void) G_GNUC_CONST;
 EdcHost * edc_host_new(void);
+
+gchar *edc_host_get_name(EdcHost *host);
+void edc_host_set_name(EdcHost *host, const gchar *name);
+
+gchar *edc_host_get_address(EdcHost *host);
+void edc_host_set_address(EdcHost *host, const gchar *address);
+
+gint edc_host_get_port(EdcHost *host);
+void edc_host_set_port(EdcHost *host, gint port);
+
+gchar *edc_host_get_user(EdcHost *host);
+void edc_host_set_user(EdcHost *host, const gchar *user);
+
+gchar *edc_host_get_password(EdcHost *host);
+void edc_host_set_password(EdcHost *host, const gchar *password);
 
 G_END_DECLS
 
