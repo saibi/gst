@@ -8,7 +8,7 @@ int main(void)
 
 	printf("hello\n");
 
-	edc_object_unref(host);
+	g_object_unref(host);
 
 	return 0;
 }
