@@ -30,6 +30,21 @@ static void print_properties(GObject *object)
 	}
 }
 
+static void property_notified(GObject *object, GParamSpec *pspec, gpointer data)
+{
+	GValue value = { 0 };
+	gchar *str;
+
+	g_value_init(&value, pspec->value_type);
+	g_object_get_property(object, pspec->name, &value);
+
+	str = g_strdup_value_contents(&value);
+
+	g_print("property '%s' is set to '%s'\n", pspec->name, str);
+	g_value_unset(&value);
+	g_free(str);
+}
+
 
 int main(void)
 {
@@ -108,6 +123,19 @@ int main(void)
 
 		print_properties(G_OBJECT(host));
 
+		g_object_unref(host);
+	}
+
+	{
+		g_print("property signal\n");
+
+		host = g_object_new(EDC_TYPE_HOST, NULL);
+
+		g_signal_connect(host, "notify::address", G_CALLBACK(property_notified), NULL);
+		g_signal_connect(host, "notify::port", G_CALLBACK(property_notified), NULL);
+
+		g_object_set(host, "name", "your name", "address", "seoul", "port", 18, NULL);
+		edc_host_set_user(host, "saibi");
 		g_object_unref(host);
 	}
 
