@@ -39,16 +39,45 @@ int main(void)
 
 	{
 		GValue val = G_VALUE_INIT;
+		g_value_init(&val, G_TYPE_INT);
 
-		printf("hello get_property, does not work\n");
+		printf("hello get_property, port\n");
 
 		g_object_get_property(G_OBJECT(host), "port", &val);
 
+		g_print("port=%d\n", g_value_get_int(&val));
+
 		g_value_unset(&val);
+
+		g_value_init(&val, G_TYPE_STRING);
+
+		printf("hello get_property, addr\n");
+
+		g_object_get_property(G_OBJECT(host), "address", &val);
+
+		g_print("address=[%s]\n", g_value_get_string(&val));
+
+		g_value_unset(&val);
+
+
 	}
 
 	g_object_unref(host);
 
+
+	{
+		gchar *addr;
+		gint port;
+
+		host = g_object_new(EDC_TYPE_HOST, "address", "world.com", "port", 1818, NULL);
+
+		g_object_get(host, "address", &addr, "port", &port, NULL);
+		g_print("port=%d, address=[%s]\n", port, addr);
+
+		g_free(addr);
+
+		g_object_unref(host);
+	}
 
 	return 0;
 }
