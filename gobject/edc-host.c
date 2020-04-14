@@ -202,15 +202,12 @@ gchar *edc_host_get_address(EdcHost *host)
 
 void edc_host_set_address(EdcHost *host, const gchar *address)
 {
-	EdcHostPrivate *priv;
 
 	g_return_if_fail(EDC_IS_HOST(host));
 	g_return_if_fail(address != NULL);
 
-	priv = EDC_HOST_GET_PRIVATE(host);
+	g_object_set(host, "address", address, NULL);
 
-	g_free(priv->address);
-	priv->address = g_strdup(address);
 }
 
 gint edc_host_get_port(EdcHost *host)

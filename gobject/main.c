@@ -135,7 +135,7 @@ int main(void)
 		g_signal_connect(host, "notify::port", G_CALLBACK(property_notified), NULL);
 
 		g_object_set(host, "name", "your name", "address", "seoul", "port", 18, NULL);
-		edc_host_set_user(host, "saibi");
+		edc_host_set_address(host, "pusan");
 		g_object_unref(host);
 	}
 
