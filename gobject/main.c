@@ -2,6 +2,35 @@
 
 #include <stdio.h>
 
+static void print_properties(GObject *object)
+{
+	GObjectClass *oclass;
+	GParamSpec **specs;
+	guint n;
+	guint i;
+
+	oclass = G_OBJECT_GET_CLASS(object);
+	specs = g_object_class_list_properties(oclass, &n);
+	for ( i = 0; i < n ; i++ )
+	{
+		GParamSpec *spec;
+		GValue value = { 0 };
+		gchar *str;
+
+		spec = specs[i];
+
+		g_value_init(&value, spec->value_type);
+		g_object_get_property(G_OBJECT(object), spec->name, &value);
+		str = g_strdup_value_contents(&value);
+
+		g_print("property '%s' is '%s'\n", spec->name, str);
+
+		g_value_unset(&value);
+		g_free(str);
+	}
+}
+
+
 int main(void)
 {
 	EdcHost *host = edc_host_new();
@@ -75,6 +104,9 @@ int main(void)
 		g_print("port=%d, address=[%s]\n", port, addr);
 
 		g_free(addr);
+
+
+		print_properties(G_OBJECT(host));
 
 		g_object_unref(host);
 	}

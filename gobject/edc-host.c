@@ -137,38 +137,6 @@ static void edc_host_set_property(GObject *object, guint property_id, const GVal
 	}
 }
 
-#if 0
-static void print_properties(GObject *object)
-{
-	GObjectClass *oclass;
-	GParamSpec **specs;
-	guint n;
-	guint i;
-
-	oclass = G_OBJECT_GET_CLASS(object);
-	specs = g_object_class_list_properties(oclass, &n);
-	for ( i = 0; i < n ; i++ )
-	{
-		GParamSpec *spec;
-		GValue value = { 0 };
-		gchar *str;
-
-		spec = specs[i];
-
-		g_value_init(&value, spec->value_type);
-		g_object_get_property(G_OBJECT(object), spec->name, &value);
-		str = g_strdup_value_contents(&value);
-
-		g_print("property '%s' is '%s'\n", spec-name, str);
-
-		g_value_unset(&value);
-		g_free(str);
-	}
-}
-#endif 
-
-
-
 static void edc_host_class_init(EdcHostClass *klass)
 {
 	GObjectClass *object_class;
