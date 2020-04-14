@@ -61,6 +61,11 @@ static void clock_datetime_changed(GObject *object, GParamSpec *pspec, gpointer 
 	g_date_time_unref(datetime);
 }
 
+static void clock_changed(MyClock *cl, GDateTime *datetime, gpointer user_data)
+{
+	g_print("clock_changed : %s\n", my_clock_get_text(cl));
+}
+
 
 int main(void)
 {
@@ -164,6 +169,7 @@ int main(void)
 		clock = my_clock_new();
 
 		g_signal_connect(clock, "notify::datetime", G_CALLBACK(clock_datetime_changed), "hohoho" );
+		g_signal_connect(clock, "changed", G_CALLBACK(clock_changed), 0 );
 
 		g_print("loop_run\n");
 		loop = g_main_loop_new(NULL, FALSE);

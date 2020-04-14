@@ -6,6 +6,7 @@ enum
 {
 	PROP_0,
 	PROP_DATE_TIME,
+	PROP_TEXT,
 	PROP_LAST
 };
 
@@ -13,11 +14,22 @@ struct _MyClockPrivate
 {
 	GDateTime *datetime;
 	guint timeout;
+	gchar *text;
 };
 
 
 
 static GParamSpec *props[PROP_LAST];
+
+enum
+{
+	SIGNAL_CHANGED,
+	SIGNAL_LAST
+};
+
+static guint signals[SIGNAL_LAST];
+
+
 
 GDateTime * my_clock_get_date_time(MyClock *cl)
 {
@@ -26,11 +38,28 @@ GDateTime * my_clock_get_date_time(MyClock *cl)
 	return g_date_time_ref(cl->priv->datetime);
 }
 
+const gchar * my_clock_get_text(MyClock *cl)
+{
+	g_return_val_if_fail(MY_IS_CLOCK(cl), NULL);
+
+	return cl->priv->text;
+}
+
 static void my_clock_set_date_time(MyClock *cl, GDateTime *datetime)
 {
 	g_date_time_unref(cl->priv->datetime);
 	cl->priv->datetime = g_date_time_ref(datetime);
 	g_object_notify_by_pspec(G_OBJECT(cl), props[PROP_DATE_TIME]);
+
+	g_free(cl->priv->text);
+	cl->priv->text = g_date_time_format(datetime, "%x\n%H:%M:%S");
+	g_object_notify_by_pspec(G_OBJECT(cl), props[PROP_TEXT]);
+}
+
+static void my_clock_real_changed(MyClock *cl, GDateTime *datetime)
+{
+	g_print("real_changed\n");
+	my_clock_set_date_time(cl, datetime);
 }
 
 static gboolean my_clock_update(gpointer data)
@@ -45,7 +74,7 @@ static gboolean my_clock_update(gpointer data)
 	g_get_current_time(&now);
 
 	datetime = g_date_time_new_from_timeval_local(&now);
-	my_clock_set_date_time(cl, datetime);
+	g_signal_emit(cl, signals[SIGNAL_CHANGED], 0, datetime);
 	g_date_time_unref(datetime);
 
 	interval = (1000000L - now.tv_usec) / 1000L;
@@ -88,6 +117,7 @@ static void my_clock_finalize(GObject *object)
 
 	g_date_time_unref(priv->datetime);
 	g_source_remove(priv->timeout);
+	g_free(priv->text);
 	G_OBJECT_CLASS(my_clock_parent_class)->finalize(object);
 }
 
@@ -101,12 +131,21 @@ static void my_clock_class_init(MyClockClass *klass)
 	obj_class->set_property = my_clock_set_property;
 	obj_class->get_property = my_clock_get_property;
 	obj_class->finalize = my_clock_finalize;
+	klass->changed = my_clock_real_changed;
 
 	g_type_class_add_private(klass, sizeof(MyClockPrivate));
 
 	pspec = g_param_spec_boxed("datetime", "Date and Time", "The date and time to show in the clock", G_TYPE_DATE_TIME, G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 	props[PROP_DATE_TIME] = pspec;
 	g_object_class_install_property(obj_class, PROP_DATE_TIME, pspec);
+
+	pspec = g_param_spec_string("text", "Text", "The text of the date and time", NULL, G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+	props[PROP_TEXT] = pspec;
+	g_object_class_install_property(obj_class, PROP_TEXT, pspec);
+
+
+	signals[SIGNAL_CHANGED] = g_signal_new("changed", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET(MyClockClass, changed), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
+
 }
 
 MyClock * my_clock_new(void)
@@ -123,6 +162,7 @@ static void my_clock_init(MyClock *cl)
 
 	priv->datetime = g_date_time_new_now_local();
 	priv->timeout = 0;
+	priv->text = NULL;
 
 	my_clock_update(cl);
 }

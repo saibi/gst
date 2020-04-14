@@ -26,11 +26,14 @@ struct _MyClock
 struct _MyClockClass
 {
 	GObjectClass parent_class;
+
+	void (*changed)(MyClock *cl, GDateTime *datetime);
 };
 
 GType my_clock_get_type(void) G_GNUC_CONST;
 MyClock * my_clock_new(void);
 GDateTime * my_clock_get_date_time(MyClock *cl);
+const gchar * my_clock_get_text(MyClock *cl);
 
 G_END_DECLS
 
