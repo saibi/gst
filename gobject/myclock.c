@@ -52,7 +52,7 @@ static void my_clock_set_date_time(MyClock *cl, GDateTime *datetime)
 	g_object_notify_by_pspec(G_OBJECT(cl), props[PROP_DATE_TIME]);
 
 	g_free(cl->priv->text);
-	cl->priv->text = g_date_time_format(datetime, "%x\n%H:%M:%S");
+	cl->priv->text = g_date_time_format(datetime, "%xT%H:%M:%S");
 	g_object_notify_by_pspec(G_OBJECT(cl), props[PROP_TEXT]);
 }
 
