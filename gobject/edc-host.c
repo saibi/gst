@@ -1,5 +1,16 @@
 #include "edc-host.h"
 
+enum
+{
+	EDC_HOST_PROP_0, 
+	EDC_HOST_PROP_NAME,
+	EDC_HOST_PROP_ADDRESS,
+	EDC_HOST_PROP_PORT,
+	EDC_HOST_PROP_USER,
+	EDC_HOST_PROP_PASSWORD
+};
+
+
 
 typedef struct _EdcHostPrivate EdcHostPrivate;
 struct _EdcHostPrivate
@@ -52,14 +63,108 @@ static void edc_host_finalize(GObject *self)
 	G_OBJECT_CLASS(edc_host_parent_class)->finalize(self);
 }
 
+static void edc_host_get_property(GObject *object, guint property_id, GValue *value, GParamSpec *pspec)
+{
+	EdcHost *host = EDC_HOST(object);
+	EdcHostPrivate *priv;
+
+	priv = EDC_HOST_GET_PRIVATE(host);
+
+	switch( property_id )
+	{
+		case EDC_HOST_PROP_NAME:
+			g_value_set_string(value, priv->name);
+			break;
+
+		case EDC_HOST_PROP_ADDRESS:
+			g_value_set_string(value, priv->address);
+			break;
+
+		case EDC_HOST_PROP_PORT:
+			g_value_set_int(value, priv->port);
+			break;
+
+		case EDC_HOST_PROP_USER:
+			g_value_set_string(value, priv->user);
+			break;
+
+		case EDC_HOST_PROP_PASSWORD:
+			g_value_set_string(value, priv->password);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+			break;
+	}
+}
+
+static void edc_host_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
+{
+	EdcHost *host = EDC_HOST(object);
+	EdcHostPrivate *priv;
+
+	priv = EDC_HOST_GET_PRIVATE(host);
+
+	switch( property_id )
+	{
+		case EDC_HOST_PROP_NAME:
+			g_free(priv->name);
+			priv->name = g_value_dup_string(value);
+			break;
+
+		case EDC_HOST_PROP_ADDRESS:
+			g_free(priv->address);
+			priv->address = g_value_dup_string(value);
+			break;
+
+		case EDC_HOST_PROP_PORT:
+			priv->port = g_value_get_int(value);
+			break;
+
+		case EDC_HOST_PROP_USER:
+			g_free(priv->user);
+			priv->user = g_value_dup_string(value);
+			break;
+
+		case EDC_HOST_PROP_PASSWORD:
+			g_free(priv->password);
+			priv->password = g_value_dup_string(value);
+			break;
+
+		default:
+			G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
+			break;
+	}
+}
+
 static void edc_host_class_init(EdcHostClass *klass)
 {
 	GObjectClass *object_class;
+	GParamSpec *pspec;
+
+	g_print("edc_host_class_init\n");
 
 	object_class = G_OBJECT_CLASS(klass);
 	object_class->finalize = edc_host_finalize;
+	object_class->set_property = edc_host_set_property;
+	object_class->get_property = edc_host_get_property;
 
 	g_type_class_add_private(object_class, sizeof(EdcHostPrivate));
+
+	pspec = g_param_spec_string("name", "Name", "the name of a host", "", G_PARAM_READWRITE);
+	g_object_class_install_property(object_class, EDC_HOST_PROP_NAME, pspec);
+
+	pspec = g_param_spec_string("address", "Address", "the address of a host", "", G_PARAM_READWRITE);
+	g_object_class_install_property(object_class, EDC_HOST_PROP_ADDRESS, pspec);
+
+	pspec = g_param_spec_int("port", "Port", "the port number of a host", 0, 65535, 0, G_PARAM_READWRITE);
+	g_object_class_install_property(object_class, EDC_HOST_PROP_PORT, pspec);
+
+	pspec = g_param_spec_string("user", "User", "user id for authentication", "", G_PARAM_READWRITE);
+	g_object_class_install_property(object_class, EDC_HOST_PROP_USER, pspec);
+
+	pspec = g_param_spec_string("password", "Password", "password for authentication", "", G_PARAM_READWRITE);
+	g_object_class_install_property(object_class, EDC_HOST_PROP_PASSWORD, pspec);
 }
 
 gchar * edc_host_get_name(EdcHost *host)
@@ -174,4 +279,5 @@ void edc_host_set_password(EdcHost *host, const gchar *password)
 	g_free(priv->password);
 	priv->password= g_strdup(password);
 }
+
 
