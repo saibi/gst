@@ -101,34 +101,27 @@ static void edc_host_get_property(GObject *object, guint property_id, GValue *va
 static void edc_host_set_property(GObject *object, guint property_id, const GValue *value, GParamSpec *pspec)
 {
 	EdcHost *host = EDC_HOST(object);
-	EdcHostPrivate *priv;
-
-	priv = EDC_HOST_GET_PRIVATE(host);
 
 	switch( property_id )
 	{
 		case EDC_HOST_PROP_NAME:
-			g_free(priv->name);
-			priv->name = g_value_dup_string(value);
+			edc_host_set_name(host, g_value_get_string(value));
 			break;
 
 		case EDC_HOST_PROP_ADDRESS:
-			g_free(priv->address);
-			priv->address = g_value_dup_string(value);
+			edc_host_set_address(host, g_value_get_string(value));
 			break;
 
 		case EDC_HOST_PROP_PORT:
-			priv->port = g_value_get_int(value);
+			edc_host_set_port(host, g_value_get_int(value));
 			break;
 
 		case EDC_HOST_PROP_USER:
-			g_free(priv->user);
-			priv->user = g_value_dup_string(value);
+			edc_host_set_user(host, g_value_get_string(value));
 			break;
 
 		case EDC_HOST_PROP_PASSWORD:
-			g_free(priv->password);
-			priv->password = g_value_dup_string(value);
+			edc_host_set_password(host, g_value_get_string(value));
 			break;
 
 		default:
@@ -202,12 +195,17 @@ gchar *edc_host_get_address(EdcHost *host)
 
 void edc_host_set_address(EdcHost *host, const gchar *address)
 {
+	EdcHostPrivate *priv;
 
 	g_return_if_fail(EDC_IS_HOST(host));
 	g_return_if_fail(address != NULL);
 
-	g_object_set(host, "address", address, NULL);
+	priv = EDC_HOST_GET_PRIVATE(host);
 
+	g_free(priv->address);
+	priv->address = g_strdup(address);
+
+	g_object_notify(G_OBJECT(host), "address");
 }
 
 gint edc_host_get_port(EdcHost *host)
