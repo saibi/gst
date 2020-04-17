@@ -35,11 +35,13 @@ void some_object_class_init(gpointer g_class, gpointer class_data)
 
 	this_class->method1 = &some_object_method1_impl;
 	this_class->method2 = &some_object_method2_impl;
+
+	g_print("some_object_class_init\n");
 }
 
 void some_object_class_final(gpointer g_class, gpointer class_data)
 {
-
+	g_print("some_object_class_final\n");
 }
 
 void some_object_instance_init(GTypeInstance *instance, gpointer g_class)
@@ -49,6 +51,8 @@ void some_object_instance_init(GTypeInstance *instance, gpointer g_class)
 	this_object->m_a = 0;
 	this_object->m_b = "empty";
 	this_object->m_c = 0.0;
+
+	g_print("some_object_instance_init\n");
 }
 
 GType some_object_get_type(void)
