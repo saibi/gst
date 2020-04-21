@@ -21,14 +21,11 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 	GstMyFilter *filter;
 	static gssize cnt = 0;
 	static int fd = -1;
-	static int fd2 = -1;
 
 	if ( fd < 0 )
 	{
 		fd = creat("/tmp/dump", S_IRWXU); 
 		g_print("create /tmp/dump, fd = %d\n", fd);
-
-		fd2 = creat("/tmp/dump2", S_IRWXU);
 	}
 
 	filter = GST_MYFILTER(parent);
@@ -55,10 +52,17 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 
 			if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) ) 
 			{
-				g_print("write /tmp/dump , size %" G_GSIZE_FORMAT "\n", info.size);
-				write(fd, info.data, info.size);
+				int i;
 
-				write(fd2, info.data, 512*288);
+				for ( i = 0 ; i < 512*288; ++i)
+				{
+					info.data[i] = ~info.data[i];
+				}
+
+				g_print("write /tmp/dump , size %" G_GSIZE_FORMAT "\n", info.size);
+				
+				
+				write(fd, info.data, info.size);
 
 				gst_memory_unmap(mem, &info);
 			}
@@ -75,8 +79,6 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 			close(fd);
 			fd = 0;
 			g_print("close fd\n");
-
-			close(fd2);
 		}
 	}
 
