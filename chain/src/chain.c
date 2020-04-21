@@ -52,12 +52,8 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 
 			if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) ) 
 			{
-				int i;
 
-				for ( i = 0 ; i < 512*288; ++i)
-				{
-					info.data[i] = ~info.data[i];
-				}
+				memset(&info.data[512*288], 128, info.size - 512*288);
 
 				g_print("write /tmp/dump , size %" G_GSIZE_FORMAT "\n", info.size);
 				
