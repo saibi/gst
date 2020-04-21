@@ -22,6 +22,9 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 	static gssize cnt = 0;
 	static int fd = -1;
 
+	GstBuffer *my_buffer;
+	GstMapInfo my_map;
+
 	if ( fd < 0 )
 	{
 		fd = creat("/tmp/dump", S_IRWXU); 
@@ -52,13 +55,24 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 
 			if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) ) 
 			{
-
-				memset(&info.data[512*288], 128, info.size - 512*288);
-
+				//memset(&info.data[512*288], 128, info.size - 512*288);
 				g_print("write /tmp/dump , size %" G_GSIZE_FORMAT "\n", info.size);
-				
-				
 				write(fd, info.data, info.size);
+
+
+				my_buffer = gst_buffer_new_and_alloc(info.size);
+				GST_BUFFER_TIMESTAMP(my_buffer) = GST_BUFFER_TIMESTAMP(buf);
+				GST_BUFFER_DURATION(my_buffer) = GST_BUFFER_DURATION(buf);
+
+				gst_buffer_map(my_buffer, &my_map, GST_MAP_WRITE);
+				memcpy(my_map.data, info.data, my_map.size);
+				memset(&my_map.data[512*288], 0, my_map.size - 512*288);
+
+				g_print("new buf, size %" G_GSIZE_FORMAT "\n", my_map.size);
+				gst_buffer_unmap(my_buffer, &my_map);
+
+
+
 
 				gst_memory_unmap(mem, &info);
 			}
@@ -79,5 +93,5 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 	}
 
 	/* just push out the incoming buffer without touching it */
-	return gst_pad_push(filter->srcpad, buf);
+	return gst_pad_push(filter->srcpad, fd > 0 ? my_buffer : buf );
 }
