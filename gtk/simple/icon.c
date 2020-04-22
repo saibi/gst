@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	gtk_window_set_default_size(GTK_WINDOW(window), 230, 150);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("web.jpg"));
-	gtk_widget_show(:window);
+	gtk_widget_show(window);
 
 	g_signal_connect_swapped(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
