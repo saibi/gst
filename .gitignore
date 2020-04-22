@@ -7,3 +7,4 @@ cscope.out
 depend
 
 plugin_test
+*.app

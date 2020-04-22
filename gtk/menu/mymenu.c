@@ -81,38 +81,6 @@ int main(int argc, char *argv[])
 	gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menubar_edit);
 
 
-
-#if 0
-	menubar_edit = gtk_menu_item_new_with_label("Edit");
-	gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menubar_edit);
-
-
-
-
-	fileMenu = gtk_menu_new();
-	fileMi = gtk_menu_item_new_with_label("File");
-
-	imprMenu = gtk_menu_new();
-	imprMi = gtk_menu_item_new_with_label("Import");
-	feedMi = gtk_menu_item_new_with_label("Import news feed...");
-	bookMi = gtk_menu_item_new_with_label("Import bookmarks...");
-	mailMi = gtk_menu_item_new_with_label("Import mail...");
-
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(imprMi), imprMenu);
-	gtk_menu_shell_append(GTK_MENU_SHELL(imprMenu), feedMi);
-	gtk_menu_shell_append(GTK_MENU_SHELL(imprMenu), bookMi);
-	gtk_menu_shell_append(GTK_MENU_SHELL(imprMenu), mailMi);
-
-	sep = gtk_separator_menu_item_new();
-
-	quitMi = gtk_menu_item_new_with_label("Quit");
-
-	gtk_menu_item_set_submenu(GTK_MENU_ITEM(fileMi), fileMenu);
-	gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), imprMi);
-	gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), sep);
-	gtk_menu_shell_append(GTK_MENU_SHELL(fileMenu), quitMi);
-#endif 
-
 	g_signal_connect_swapped(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
 	g_signal_connect(G_OBJECT(file_quit), "activate", G_CALLBACK(gtk_main_quit), NULL);
