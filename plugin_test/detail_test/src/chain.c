@@ -16,6 +16,35 @@
 /* chain function
  * this function does the actual processing
  */
+
+GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer * buf)
+{
+	GstRkcamCalib *filter;
+
+	filter = GST_RKCAMCALIB(parent);
+
+	if (filter->silent == FALSE)
+	{
+		GstMemory *mem = gst_buffer_get_all_memory(buf);
+		//gsize size = gst_buffer_get_size(buf);
+
+		GstMapInfo info;
+
+		if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) ) 
+		{
+			memset(&info.data[512*288], 0, info.size - 512*288);
+			gst_memory_unmap(mem, &info);
+		}
+		gst_memory_unref(mem);
+	}
+
+	/* just push out the incoming buffer without touching it */
+	return gst_pad_push(filter->srcpad, buf );
+}
+
+
+#if 0
+// save NV12 raw image
 GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer * buf)
 {
 	GstRkcamCalib *filter;
@@ -95,3 +124,4 @@ GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer 
 	/* just push out the incoming buffer without touching it */
 	return gst_pad_push(filter->srcpad, fd > 0 ? my_buffer : buf );
 }
+#endif 
