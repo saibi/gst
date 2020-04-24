@@ -13,6 +13,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+extern gboolean cam_format_ok;
+extern gint cam_width;
+extern gint cam_height;
+
+
+// modify uv channels
+
 /* chain function
  * this function does the actual processing
  */
@@ -23,16 +31,15 @@ GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer 
 
 	filter = GST_RKCAMCALIB(parent);
 
-	if (filter->silent == FALSE)
+	if (filter->silent == FALSE && cam_format_ok )
 	{
 		GstMemory *mem = gst_buffer_get_all_memory(buf);
-		//gsize size = gst_buffer_get_size(buf);
-
+		gsize y_size = cam_width * cam_height;
 		GstMapInfo info;
 
 		if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) ) 
 		{
-			memset(&info.data[512*288], 0, info.size - 512*288);
+			memset(&info.data[y_size], 0, info.size - y_size);
 			gst_memory_unmap(mem, &info);
 		}
 		gst_memory_unref(mem);

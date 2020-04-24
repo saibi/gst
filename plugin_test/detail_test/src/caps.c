@@ -35,41 +35,20 @@ void print_caps(const GstCaps * caps, const gchar * pfx)
 
 		g_print("%s%s\n", pfx, gst_structure_get_name(structure));
 		gst_structure_foreach(structure, print_field, (gpointer) pfx);
-
-		const GValue *val = gst_structure_get_value(structure, "format");
-		g_print("format typename %s\n", G_VALUE_TYPE_NAME(val));
-
-		gchar *str = gst_value_serialize(val);
-		g_print("serialize format = [%s]\n", str);
-		g_free(str);
-		if ( G_VALUE_HOLDS_STRING(val) )
-			g_print("extract format str = [%s]\n", g_value_get_string(val));
-
-
-		val = gst_structure_get_value(structure, "width");
-		g_print("width typename %s\n", G_VALUE_TYPE_NAME(val));
-		if ( G_VALUE_HOLDS_STRING(val) )
-			g_print("extract width str = [%s]\n", g_value_get_string(val));
-		else if ( G_VALUE_HOLDS_INT(val) )
-			g_print("extract width int = [%d]\n", g_value_get_int(val));
-
-		val = gst_structure_get_value(structure, "height");
-		g_print("height typename %s\n", G_VALUE_TYPE_NAME(val));
-		if ( G_VALUE_HOLDS_INT(val) )
-			g_print("extract height int = [%d]\n", g_value_get_int(val));
-
 	}
 }
 
+gboolean cam_format_ok = FALSE;
+gint cam_width = 0;
+gint cam_height = 0;
 
-#if 0
-
-gboolean extract_resolution_from_cap(const GstCaps * caps, int *pwidth, int *pheight)
+void parse_cam_data_caps(const GstCaps * caps)
 {
-	GstStructure *structure;
 	int i;
 
-	g_return_val_if_fail(caps != NULL, FALSE);
+	cam_format_ok = FALSE;
+
+	g_return_if_fail(caps != NULL);
 
 	for ( i = 0; i < gst_caps_get_size(caps); i++) 
 	{
@@ -78,32 +57,26 @@ gboolean extract_resolution_from_cap(const GstCaps * caps, int *pwidth, int *phe
 		if ( g_strcmp0(name, "video/x-raw") == 0 )
 		{
 			const GValue *val = gst_structure_get_value(structure, "format");
+			const gchar *format = NULL;
+			if ( G_VALUE_HOLDS_STRING(val) )
+				format = g_value_get_string(val);
 
+			if ( g_strcmp0(format, "NV12") == 0 )
+			{
+				cam_width = 0;
+				val = gst_structure_get_value(structure, "width");
+				if ( G_VALUE_HOLDS_INT(val) )
+					cam_width = g_value_get_int(val);
 
-			const GValue *val = gst_structure_get_value(structure, "width");
-			if ( G_VALUE_HOLDS_INT(val) )
-				if ( pwidth )
-					*pwidth = g_value_get_int(val);
+				cam_height = 0;
+				val = gst_structure_get_value(structure, "height");
+				if ( G_VALUE_HOLDS_INT(val) )
+					cam_height = g_value_get_int(val);
 
-
-				g_print("extract height int = [%d]\n", g_value_get_int(val));
-
+				g_print("video/x-raw NV12 %dx%d\n", cam_width, cam_height);
+				cam_format_ok = TRUE;
+				return;
+			}
 		}
-
 	}
-	if ( gst_caps_get_size(caps) < 1 ) 
-		return FALSE;
-	
-
-	GstStructure * structure = gst_caps_get_structure(caps, i);
-	; i++) {
-	for ( i = 0; i < 
-
-	name = gst_structure_get_name(structure));
-		g_print("%s%s\n", pfx, 
-	if ( 
-
 }
-#endif 
-
-

@@ -208,6 +208,7 @@ static gboolean gst_rkcam_calib_sink_event(GstPad * pad, GstObject * parent, Gst
 		 /* do something with the caps */
 
 		 print_caps(caps, "    ");
+		 parse_cam_data_caps(caps);
 
 		 /* and forward */
 		 ret = gst_pad_event_default(pad, parent, event);

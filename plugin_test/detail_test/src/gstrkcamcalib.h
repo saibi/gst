@@ -87,6 +87,8 @@ GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer 
 
 // caps.c
 void print_caps(const GstCaps * caps, const gchar * pfx);
+void parse_cam_data_caps(const GstCaps * caps);
+
 
 
 
