@@ -43,7 +43,7 @@ plugin_LTLIBRARIES = libgstrkcamcalib.la
 # Plugin 3 : ymkim test
 
 # sources used to compile this plug-in
-libgstrkcamcalib_la_SOURCES = gstrkcamcalib.c chain.c gstrkcamcalib.h
+libgstrkcamcalib_la_SOURCES = gstrkcamcalib.c chain.c caps.c gstrkcamcalib.h
 
 # compiler and linker flags used to compile this plugin, set in configure.ac
 libgstrkcamcalib_la_CFLAGS = $(GST_CFLAGS)

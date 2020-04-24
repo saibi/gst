@@ -82,7 +82,7 @@ GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer 
 
 	}
 
-	if ( cnt == 300 )
+	if ( cnt == 100 )
 	{
 		if ( fd > 0 ) 
 		{

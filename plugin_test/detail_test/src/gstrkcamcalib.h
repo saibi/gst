@@ -81,6 +81,15 @@ struct _GstRkcamCalibClass
 
 GType gst_rkcam_calib_get_type (void);
 
+
+// chain.c
+GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer * buf);
+
+// caps.c
+void print_caps(const GstCaps * caps, const gchar * pfx);
+
+
+
 G_END_DECLS
 
 #endif /* __GST_RKCAMCALIB_H__ */

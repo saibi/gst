@@ -102,7 +102,6 @@ static void gst_rkcam_calib_get_property(GObject * object, guint prop_id, GValue
 
 static gboolean gst_rkcam_calib_sink_event(GstPad * pad, GstObject * parent, GstEvent * event);
 
-GstFlowReturn gst_rkcam_calib_chain(GstPad * pad, GstObject * parent, GstBuffer * buf);
 
 /* GObject vmethod implementations */
 
@@ -186,6 +185,7 @@ static void gst_rkcam_calib_get_property(GObject * object, guint prop_id, GValue
 	}
 }
 
+
 /* GstElement vmethod implementations */
 
 /* this function handles sink events */
@@ -206,6 +206,8 @@ static gboolean gst_rkcam_calib_sink_event(GstPad * pad, GstObject * parent, Gst
 
 		 gst_event_parse_caps(event, &caps);
 		 /* do something with the caps */
+
+		 print_caps(caps, "    ");
 
 		 /* and forward */
 		 ret = gst_pad_event_default(pad, parent, event);
