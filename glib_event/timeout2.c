@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	int id;
 
 	// create a new time-out source
-	source = g_timeout_source_new(1000);
+	source = g_timeout_source_new_seconds(5);
 
 	// create a context
 	context = g_main_context_new();
