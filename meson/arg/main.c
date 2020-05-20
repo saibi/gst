@@ -7,6 +7,15 @@ int main(int argc, char *argv[])
 
 	foo();
 
+#ifdef HELLO
+	printf("hello\n");
+#endif
+
+#ifdef WORLD 
+	printf("world\n");
+#endif
+
+
 	return 0;
 
 }
