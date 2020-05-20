@@ -1,4 +1,5 @@
 project('hello', 'c')
 build_machine.system()
-executable('demo', 'main.c' )
+src = 'main.c'
+executable('demo', src )
 
