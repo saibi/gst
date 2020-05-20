@@ -1,0 +1,33 @@
+[binaries]
+#exe_wrapper = 'wine' # A command used to run generated executables.
+
+c = '/opt/gcc-linaro-7.3.1-2018.05-i686_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc'
+cpp = '/opt/gcc-linaro-7.3.1-2018.05-i686_aarch64-linux-gnu/bin/aarch64-linux-gnu-g++'
+ar = '/opt/gcc-linaro-7.3.1-2018.05-i686_aarch64-linux-gnu/bin/aarch64-linux-gnu-ar'
+strip = '/opt/gcc-linaro-7.3.1-2018.05-i686_aarch64-linux-gnu/bin/aarch64-linux-gnu-strip'
+
+[paths]
+
+
+[properties]
+#sizeof_int = 4
+#sizeof_wchar_t = 4
+#sizeof_void* = 4
+
+#alignment_char = 1
+#alignment_void* = 4
+#alignment_double = 4
+
+has_function_printf = true
+
+needs_exe_wrapper = false
+
+sys_root = '/opt/rootfs-rk3399pc-ubuntu18.04'
+pkg_config_libdir = '/opt/rootfs-rk3399pc-ubuntu18.04/usr/lib/pkgconfig'
+
+[host_machine]
+system = 'rk3399'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'
+
