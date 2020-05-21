@@ -1,0 +1,30 @@
+script file 
+
+a.sh : build script by saibi
+
+rk3399.txt : cross copmile configuration file (meson)
+pkgconfig.sh : pkg-config utility wrapper (meson)
+
+
+How to test
+
+1. clone gst-template (https://gitlab.freedesktop.org/gstreamer/gst-template.git)
+2. cd gst-template/gst-plugin/src
+3. generate myfilter template code  ( ../tool/make_element MyFilter )
+4. modify build rule for generated code (refer to meson.build)
+5. modify header to avoid compile error (refer to gstmyfilter.h)
+6. build & install
+	$ cd gst-template
+	$ meson setup bld
+	$ ninja -C bld
+	$ ninja -C bld --prefix=/tmp/test install
+
+7. run
+	$ gst-inspect-1.0 --gst-plugin-path=XXXXXX... myfilter
+	$ gst-launch-1.0 --gst-plugin-path=XXXXXX... fakesrc ! myfilter ! fakesink
+
+
+
+
+
+
