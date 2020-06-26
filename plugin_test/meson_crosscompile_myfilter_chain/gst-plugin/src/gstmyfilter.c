@@ -136,7 +136,7 @@ static void gst_my_filter_class_init(GstMyFilterClass * klass)
 
 	g_object_class_install_property(gobject_class, PROP_STR, g_param_spec_string("str", "Str", "property string value test", "", G_PARAM_READWRITE));
 
-	g_object_class_install_property(gobject_class, PROP_INT, g_param_spec_string("int", "Int", "property int value test", 0, G_PARAM_READWRITE));
+	g_object_class_install_property(gobject_class, PROP_INT, g_param_spec_int("int", "Int", "property int value test", 0, 255, 0,  G_PARAM_READWRITE));
 
 	gst_element_class_set_details_simple(gstelement_class, "MyFilter", "FIXME:Generic", "FIXME:Generic Template Element", "Youngmin Kim <<user@hostname.org>>");
 

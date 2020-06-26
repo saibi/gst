@@ -24,7 +24,7 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 
 	if (filter->silent == FALSE)
 	{
-		g_print("I'm plugged, therefore I'm in. (%s)\n", filter->str ? filter->str : "NULL");
+		g_print("I'm plugged, therefore I'm in. (%s) %d\n", filter->str ? filter->str : "NULL", filter->int_val);
 
 		if ( mem ) 
 		{
@@ -48,7 +48,7 @@ GstFlowReturn gst_my_filter_chain(GstPad * pad, GstObject * parent, GstBuffer * 
 		if ( gst_memory_map(mem, &info, GST_MAP_READ | GST_MAP_WRITE) )
 		{
 			gsize y_size = filter->width * filter->height;
-			memset(&info.data[y_size], 102, info.size - y_size); 
+			memset(&info.data[y_size], filter->int_val, info.size - y_size); 
 
 			gst_memory_unmap(mem, &info);
 		}
